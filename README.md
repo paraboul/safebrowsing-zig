@@ -6,6 +6,8 @@ Safe Browsing is a Google service that lets client applications check URLs again
 
 This library provides a way to query URLs against pre-downloaded threat lists (`hashList`) provided by Google. These threat lists act as a kind of Bloom filter–like database, ensuring no false negatives. When a positive match is found, a verification query to the Google Safe Browsing API is required.
 
+Google API is using protobuf. Deserialization code is generated using https://github.com/Arwalk/zig-protobuf
+
 ### How it works
 
 1. **Expression URLs**
