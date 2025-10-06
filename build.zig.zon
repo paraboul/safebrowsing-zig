@@ -1,0 +1,19 @@
+.{
+    .name = .safebrowsing_zig,
+    .version = "0.0.1",
+    .fingerprint = 0xd8e61b76713c504b,
+    .minimum_zig_version = "0.15.1",
+    .dependencies = .{
+        .protobuf = .{
+            .url = "git+https://github.com/Arwalk/zig-protobuf?ref=v3.0.0#b2b5e70d7669b45cdbb42ed8ebab512e982ee5d5",
+            .hash = "protobuf-2.0.0-0e82an3rJACrCrLX7sohjL3qQIcDUV_x7NgEo1AORXUD",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        //"LICENSE",
+        //"README.md",
+    },
+}
