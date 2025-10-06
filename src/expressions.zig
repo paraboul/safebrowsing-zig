@@ -17,7 +17,7 @@ pub fn getURLHash(url: []const u8) u256 {
 }
 
 pub fn index_public_suffix(alloc: std.mem.Allocator) !void {
-    const public_suffix_file = try std.fs.cwd().openFile("./public_suffix_list.dat.txt", .{ .mode = .read_only });
+    const public_suffix_file = try std.fs.cwd().openFile("./data/public_suffix_list.txt", .{ .mode = .read_only });
     defer public_suffix_file.close();
 
     var buf: [256]u8 = undefined;
