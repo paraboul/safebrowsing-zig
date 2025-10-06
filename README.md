@@ -2,35 +2,30 @@
 
 High-performance, Zig implementation of Google Safe Browsing v5 lookups (https://developers.google.com/safe-browsing/)
 
-* protobuf deserialization code generated using https://github.com/Arwalk/zig-protobuf
-* Host-Suffix Path-Prefix Expressions generation as defined [here](https://developers.google.com/safe-browsing/reference/URLs.and.Hashing#host-suffix-path-prefix-expressions)
-* Local threat database decoding from protobuf using Golomb-Rice compression as defined [here](https://developers.google.com/safe-browsing/reference/Local.Database)
-* Real-Time mode: expressions checked against the Global Cache list
-* Check SHA-256 prefixes against the local database
-* Designed to scan millions of URLs (sub-second on modern hardware)
-* Outputs a list of "unsure" 4-byte prefixes to verify via Google's hash search endpoint
+Safe Browsing is a Google service that lets client applications check URLs against Google's constantly updated lists of unsafe web resources. Examples of unsafe web resources are social engineering sites (phishing and deceptive sites) and sites that host malware or unwanted software.
+
+This library provides a way to query URLs against pre-downloaded threat lists (`hashList`) provided by Google. These threat lists act as a kind of Bloom filter–like database, ensuring no false negatives. When a positive match is found, a verification query to the Google Safe Browsing API is required.
 
 ### How it works
 
 1. **Expression URLs**
 
-* For each input URL, it computes the v5 host-suffix / path-prefix set.
+* For each input URL, compute the v5 host-suffix / path-prefix set.
 * eTLD+1 are respected using [Public Suffix List](https://publicsuffix.org/)
-* Each expression URL is canonicalized and hashed (SHA-256) to generate 4-byte (prefix) keys.
+* Each expression URL is hashed (SHA-256) to generate 4-byte (prefix) keys.
 
-2. **Global Cache (Real-Time)**
+2. **Global Cache (Real-Time mode of operation)**
 
-* Before touching the local DB, it checks the global cache list for real-time verdicts that can short-circuit lookups.
+* Before querying the local threat database, check the global cache for known "safe" URLs.
 
 3. **Local Database**
 
-* It loads and decodes the v5 threat list database from Google's update API.
+* Load and decode a hashList (threat list) database from Google's API.
 * The protobuf payload is decoded and Golomb–Rice compressed chunks are expanded into a compact prefix set.
 
 4. **Unsure prefixes**
 
-* If a prefix is present but a full hash verdict is required, it emits it in the "unsure" output list for a follow-up hash search request to Google.
-* This minimizes online calls while preserving detection.
+* If a prefix is present in a threat list, emits it in the "unsure" output list for a follow-up hash search request to Google's hashes search endpoint.
 
 ## TODO
 
