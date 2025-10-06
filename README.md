@@ -15,19 +15,19 @@ High-performance, Zig implementation of Google Safe Browsing v5 lookups (https:/
 1. **Expression URLs**
 
 * For each input URL, it computes the v5 host-suffix / path-prefix set.
-* Public suffixes are respected using [Public Suffix List](https://publicsuffix.org/) data so it doesn't over or under-expand hosts.
+* eTLD+1 are respected using [Public Suffix List](https://publicsuffix.org/)
 * Each expression URL is canonicalized and hashed (SHA-256) to generate 4-byte (prefix) keys.
 
-1. **Global Cache (Real-Time)**
+2. **Global Cache (Real-Time)**
 
 * Before touching the local DB, it checks the global cache list for real-time verdicts that can short-circuit lookups.
 
-1. **Local Database**
+3. **Local Database**
 
 * It loads and decodes the v5 threat list database from Google's update API.
 * The protobuf payload is decoded and Golomb–Rice compressed chunks are expanded into a compact prefix set.
 
-1. **Unsure prefixes**
+4. **Unsure prefixes**
 
 * If a prefix is present but a full hash verdict is required, it emits it in the "unsure" output list for a follow-up hash search request to Google.
 * This minimizes online calls while preserving detection.
