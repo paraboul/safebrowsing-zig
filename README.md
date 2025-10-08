@@ -1,5 +1,7 @@
 ## safebrowsing-zig
 
+⚠️ **Work in progress**
+
 High-performance, Zig implementation of Google Safe Browsing v5 lookups (https://developers.google.com/safe-browsing/)
 
 Safe Browsing is a Google service that lets client applications check URLs against Google's constantly updated lists of unsafe web resources. Examples of unsafe web resources are social engineering sites (phishing and deceptive sites) and sites that host malware or unwanted software.
