@@ -9,6 +9,14 @@ pub fn getURLPrefix(url: []const u8) u32 {
     return std.mem.readInt(u32, outhash[0..4], .big);
 }
 
+pub fn getURLPrefixBase64(url: []const u8, dest: []u8, truncate: u8) [] const u8 {
+    var outhash : [sha256.digest_length]u8 = undefined;
+
+    sha256.hash(url, &outhash, .{});
+
+    return std.base64.url_safe_no_pad.Encoder.encode(dest, outhash[0..truncate]);
+}
+
 pub fn getURLHash(url: []const u8) u256 {
     var outhash : [sha256.digest_length]u8 = undefined;
 

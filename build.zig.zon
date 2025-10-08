@@ -8,6 +8,10 @@
             .url = "git+https://github.com/Arwalk/zig-protobuf?ref=v3.0.0#b2b5e70d7669b45cdbb42ed8ebab512e982ee5d5",
             .hash = "protobuf-2.0.0-0e82an3rJACrCrLX7sohjL3qQIcDUV_x7NgEo1AORXUD",
         },
+        .clap = .{
+            .url = "https://github.com/Hejsil/zig-clap/archive/refs/tags/0.11.0.tar.gz",
+            .hash = "clap-0.11.0-oBajB-HnAQDPCKYzwF7rO3qDFwRcD39Q0DALlTSz5H7e",
+        },
     },
     .paths = .{
         "build.zig",

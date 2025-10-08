@@ -60,6 +60,9 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    const clap = b.dependency("clap", .{});
+    exe.root_module.addImport("clap", clap.module("clap"));
+
     const protobuf_dep = b.dependency("protobuf", .{
            .target = target,
            .optimize = optimize,
@@ -68,7 +71,6 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("protobuf", protobuf_dep.module("protobuf"));
 
     b.installArtifact(exe);
-
 
     const gen_proto = b.step("gen-proto", "generates zig files from protocol buffer definitions");
     const protoc_step = protobuf.RunProtocStep.create(b, protobuf_dep.builder, target, .{
