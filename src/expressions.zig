@@ -4,14 +4,13 @@ const sha256 = std.crypto.hash.sha2.Sha256;
 
 pub fn getURLPrefix(url: []const u8) u32 {
     var outhash : [sha256.digest_length]u8 = undefined;
-
     sha256.hash(url, &outhash, .{});
+
     return std.mem.readInt(u32, outhash[0..4], .big);
 }
 
 pub fn getURLPrefixBase64(url: []const u8, dest: []u8, truncate: u8) [] const u8 {
     var outhash : [sha256.digest_length]u8 = undefined;
-
     sha256.hash(url, &outhash, .{});
 
     return std.base64.url_safe_no_pad.Encoder.encode(dest, outhash[0..truncate]);
@@ -19,34 +18,26 @@ pub fn getURLPrefixBase64(url: []const u8, dest: []u8, truncate: u8) [] const u8
 
 pub fn getURLHash(url: []const u8) u256 {
     var outhash : [sha256.digest_length]u8 = undefined;
-
     sha256.hash(url, &outhash, .{});
+
     return std.mem.readInt(u256, outhash[0..32], .big);
 }
 
 pub fn index_public_suffix(alloc: std.mem.Allocator) !void {
-    const public_suffix_file = try std.fs.cwd().openFile("./data/public_suffix_list.txt", .{ .mode = .read_only });
-    defer public_suffix_file.close();
+    var lines = std.mem.splitScalar(u8, @embedFile("public_suffix_list.txt"), '\n');
 
-    var buf: [256]u8 = undefined;
-    var file_reader = public_suffix_file.readerStreaming(&buf);
-
-    while (file_reader.interface.takeDelimiterExclusive('\n')) |line| {
+    while (lines.next()) |line| {
         if (std.mem.startsWith(u8, line, "//") or line.len == 0) {
             continue;
         }
-        try public_suffix.put(alloc, try alloc.dupe(u8, line), {});
 
-    } else |err| switch (err) {
-        error.EndOfStream => {},
-        else => |e| return e,
+        try public_suffix.put(alloc, line, {});
     }
 }
 
 
 fn path_prefix(alloc: std.mem.Allocator, path: []const u8, out: *std.ArrayList([]const u8)) !void {
     var current = path;
-
     try out.append(alloc, path);
 
     while (true) {
@@ -64,8 +55,8 @@ fn host_suffix(alloc: std.mem.Allocator, host: []const u8, out: *std.ArrayList([
     var tld : [] const u8 = host;
 
     while (true) : (_ = parts.next()) {
-
         const rest = parts.rest();
+
         if (rest.len == 0) {
             break;
         }

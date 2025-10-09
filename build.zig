@@ -60,6 +60,10 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    exe.root_module.addAnonymousImport("public_suffix_list.txt", .{
+        .root_source_file = b.path("data/public_suffix_list.txt")
+    });
+
     const clap = b.dependency("clap", .{});
     exe.root_module.addImport("clap", clap.module("clap"));
 
