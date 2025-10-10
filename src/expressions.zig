@@ -61,7 +61,7 @@ fn host_suffix(alloc: std.mem.Allocator, host: []const u8, out: *std.ArrayList([
             break;
         }
 
-        if (public_suffix.get(rest) != null) {
+        if (public_suffix.contains(rest)) {
             tld = rest;
             break;
         }
