@@ -47,4 +47,39 @@ pub fn build(b: *std.Build) void {
 
     gen_proto.dependOn(&protoc_step.step);
 
+    const module = createPublicSuffixHash(b) catch @panic("Error");
+    exe.root_module.addImport("generated_data", module);
+
+}
+
+fn createPublicSuffixHash(b: *std.Build) !*std.Build.Module {
+    const write_files = b.addWriteFiles();
+
+    var transform : std.ArrayList(u8) = .empty;
+    defer transform.deinit(b.allocator);
+
+    var cwd = std.fs.cwd();
+    const content = try cwd.readFileAlloc(b.allocator, "data/public_suffix_list.txt", 1024*1024);
+
+    var lines = std.mem.splitScalar(u8, content, '\n');
+
+    while (lines.next()) |line| {
+        if (std.mem.startsWith(u8, line, "//") or line.len == 0) {
+            continue;
+        }
+
+        try transform.appendSlice(b.allocator, b.fmt(".{{ \"{s}\" }},\n", .{line}));
+    }
+
+    const genfile =
+        \\const std = @import("std");
+        \\
+        \\pub const psh = std.StaticStringMap(void).initComptime(.{{ {s} }});
+    ;
+
+    const p = write_files.add("gen.zig", b.fmt(genfile, .{transform.items}));
+
+    return b.addModule("generated_data", .{
+        .root_source_file = p,
+    });
 }

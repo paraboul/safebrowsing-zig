@@ -6,6 +6,7 @@ const HashDecoder = @import("hashes.zig");
 const expressions = @import("expressions.zig");
 const clap = @import("clap");
 
+
 var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
 
 
@@ -65,8 +66,6 @@ pub fn main() !void {
 
     var arena : std.heap.ArenaAllocator = .init(gpa);
     defer arena.deinit();
-
-    try expressions.index_public_suffix(arena.allocator());
 
     var globalCache = try get_hashes_index(u256, gpa, res.args.globalcache.?);
     defer globalCache.deinit();

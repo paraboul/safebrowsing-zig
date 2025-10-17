@@ -1,6 +1,8 @@
 const std = @import("std");
-var public_suffix : std.StringHashMapUnmanaged(void) = .empty;
+
 const sha256 = std.crypto.hash.sha2.Sha256;
+const public_suffix = @import("generated_data").psh;
+
 
 pub fn getURLPrefix(url: []const u8) u32 {
     var outhash : [sha256.digest_length]u8 = undefined;
@@ -21,18 +23,6 @@ pub fn getURLHash(url: []const u8) u256 {
     sha256.hash(url, &outhash, .{});
 
     return std.mem.readInt(u256, outhash[0..32], .big);
-}
-
-pub fn index_public_suffix(alloc: std.mem.Allocator) !void {
-    var lines = std.mem.splitScalar(u8, @embedFile("public_suffix_list.txt"), '\n');
-
-    while (lines.next()) |line| {
-        if (std.mem.startsWith(u8, line, "//") or line.len == 0) {
-            continue;
-        }
-
-        try public_suffix.put(alloc, line, {});
-    }
 }
 
 
@@ -61,7 +51,7 @@ fn host_suffix(alloc: std.mem.Allocator, host: []const u8, out: *std.ArrayList([
             break;
         }
 
-        if (public_suffix.contains(rest)) {
+        if (public_suffix.has(rest)) {
             tld = rest;
             break;
         }
